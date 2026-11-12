@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Permintaan Maaf</title>
+<style>
+:root{--bg:#dfe5ea;--ink:#2a2118;--paper:#f6efe0;--mute:#6b5f4f;--acc:#a63d40;--bar:#fffaf0;--tx:#2a2118;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151b22;--bar:#212a33;--tx:#e8ecef}}
+:root[data-theme="dark"]{--bg:#151b22;--bar:#212a33;--tx:#e8ecef}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:Georgia,"Times New Roman",serif;overflow:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:15px system-ui,sans-serif;padding:9px 15px;border-radius:8px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer}
+button.alt{background:transparent;color:var(--acc)}
+button:focus-visible{outline:3px solid var(--tx);outline-offset:2px}
+.smile{font-size:60px;width:1em;height:1em;border-radius:50%;background:#f5c542;position:relative;box-shadow:inset -.05em -.06em 0 #d9a52a;display:inline-block}
+.smile::before,.smile::after{content:"";position:absolute;top:.32em;width:.1em;height:.15em;border-radius:50%;background:#3a2b12;animation:blink 4s infinite}
+.smile::before{left:.29em}.smile::after{left:.61em}
+.smile b{position:absolute;left:.25em;top:.5em;width:.5em;height:.25em;border-bottom:.055em solid #3a2b12;border-radius:0 0 1em 1em/0 0 .7em .7em}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+#intro{position:fixed;inset:0;z-index:20;background:radial-gradient(circle at 50% 40%,#2c3a4a,#10151b);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;color:#eee;transition:opacity 1s}
+#intro.gone{opacity:0;pointer-events:none}
+.env{position:relative;width:min(320px,80vw);height:210px;perspective:900px;cursor:pointer;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+.env>*{position:absolute}
+.env .back{inset:0;background:#c9b585;border-radius:6px;box-shadow:0 20px 40px #0008}
+.env .note{left:8%;right:8%;top:8%;height:82%;background:var(--paper);border-radius:3px;padding:16px;transition:transform 1.1s .8s ease;z-index:1;color:#5a4d3c;font-size:15px}
+.env .front{inset:0;background:#dac897;clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%);z-index:2;border-radius:6px}
+.env .flap{left:0;top:0;width:100%;height:56%;background:#cdb98a;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .9s ease;z-index:3}
+.env .seal{left:50%;top:56%;transform:translate(-50%,-50%);font-size:38px;z-index:4;transition:opacity .4s}
+.env.open .flap{transform:rotateX(180deg);z-index:0}
+.env.open .note{transform:translateY(-62%)}
+.env.open .seal{opacity:0}
+#intro p{margin:0;font-style:italic;color:#bcc6cf}
+ #app{height:100%;max-width:700px;margin:0 auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity 1.2s}
+#app.show{opacity:1}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--bar);border-radius:10px;padding:10px 12px}
+#st{margin-left:auto;font:13px system-ui,sans-serif;opacity:.75}
+#sheet{position:relative;flex:1;min-height:0}
+#paper{height:100%;overflow:auto;background:var(--paper);color:var(--ink);padding:28px 26px 34px;border-radius:4px;box-shadow:0 10px 30px #0004;line-height:1.8;font-size:18px}
+#paper h1{font-size:clamp(26px,6vw,36px);margin:0 0 4px}
+#paper .sub{font-style:italic;color:var(--mute);margin:0 0 20px}
+#paper p{margin:0 0 1em}
+#paper h2{font-size:19px;color:var(--acc);margin:1.6em 0 .5em}
+#paper .on{background:#a63d4022;box-shadow:0 0 0 5px #a63d4022;border-radius:3px}
+#paper button{margin-top:10px}
+ .fire{position:absolute;left:0;right:0;height:46px;top:100%;transform:translateY(-100%);pointer-events:none;display:none;background:linear-gradient(to top,#ff6a00cc,#ffb34766 55%,transparent);filter:drop-shadow(0 0 12px #ff8a00)}
+.fire i{position:absolute;bottom:0;width:22px;height:38px;background:linear-gradient(to top,#ff5a00,#ffc53d);border-radius:50% 50% 50% 50%/65% 65% 35% 35%;transform-origin:bottom;animation:fl .35s infinite alternate ease-in-out}
+@keyframes fl{from{transform:scale(.7,.6) rotate(-6deg)}to{transform:scale(1.1,1.25) rotate(6deg)}}
+#sheet.burning .fire{display:block;animation:rise 6s linear forwards}
+#sheet.burning{animation:clip 6s linear forwards}
+#sheet.burning #paper{animation:char 6s linear forwards}
+@keyframes rise{from{top:100%}to{top:0}}
+@keyframes clip{from{clip-path:inset(-60px 0 0 0)}to{clip-path:inset(-60px 0 100% 0)}}
+@keyframes char{to{filter:sepia(.9) brightness(.55)}}
+ #outro{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center;padding:30px;background:var(--bg)}
+#outro.show{display:flex;animation:in 2s}
+#outro .smile{font-size:120px}
+#outro p{max-width:420px;margin:0;font-size:20px;line-height:1.6}
+@keyframes in{from{opacity:0}}
+@keyframes shake{0%,100%{transform:translate(0)}10%{transform:translate(-14px,8px)}20%{transform:translate(12px,-10px)}30%{transform:translate(-10px,-6px)}40%{transform:translate(8px,10px)}60%{transform:translate(-5px,4px)}80%{transform:translate(3px,-3px)}}
+#app.shake{animation:shake .8s}
+@keyframes fall{0%{transform:none}15%{transform:translateY(-14px) rotate(-1deg)}100%{transform:translateY(120vh) rotate(18deg);opacity:.6}}
+#app.collapse .bar{animation:fall 1.6s .5s cubic-bezier(.5,0,1,.6) forwards}
+#outro::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,#0007 0 2px,transparent 2px 4px)}
+#outro.glitch::after,#outro.scary::after{opacity:.45}
+@keyframes gl{0%{transform:translate(0);filter:none}15%{transform:translate(-8px,3px) skewX(10deg);filter:hue-rotate(120deg) saturate(4)}30%{transform:translate(6px,-4px);filter:invert(1)}45%{transform:translate(-3px,0) scaleY(1.08);filter:none;clip-path:inset(30% 0 40% 0)}60%{transform:translate(9px,2px) skewX(-12deg);filter:hue-rotate(250deg);clip-path:none}80%{transform:translate(-5px,-2px);filter:contrast(3)}100%{transform:none;filter:none}}
+#outro.glitch .smile,#outro.glitch p{animation:gl .22s steps(1) infinite}
+#outro.glitch p{text-shadow:3px 0 #f0f,-3px 0 #0ff}
+@keyframes creep{from{transform:scale(1)}to{transform:scale(1.12) rotate(-1.5deg)}}
+#outro.scary{background:#0a0505;transition:background .3s}
+#outro.scary p{color:#b33}
+#outro.scary .smile{background:#d8c27a;box-shadow:inset -.05em -.06em 0 #8a7a3a,0 0 .35em #a00;animation:creep 2.5s ease-in-out infinite alternate}
+#outro.scary .smile::before,#outro.scary .smile::after{top:.24em;width:.17em;height:.23em;background:#000;box-shadow:0 0 .06em #f00;animation:none}
+#outro.scary .smile::before{left:.2em}
+#outro.scary .smile::after{left:.63em}
+#outro.scary .smile b{left:.12em;top:.46em;width:.76em;height:.38em;border:.03em solid #111;border-top-width:.05em;border-radius:0 0 50% 50%/0 0 100% 100%;background:repeating-linear-gradient(90deg,#eee 0 .04em,#111 .04em .055em)}
+@media (prefers-reduced-motion:reduce){.env,.smile::before,.smile::after,#outro.glitch .smile,#outro.glitch p,#outro.scary .smile{animation:none}}
+</style>
+</head>
+<body>
+<div id="intro">
+  <div class="env" id="env" role="button" tabindex="0" aria-label="Buka amplop">
+    <div class="back"></div>
+    <div class="note">Untuk kamu…</div>
+    <div class="front"></div>
+    <div class="flap"></div>
+    <div class="seal smile"><b></b></div>
+  </div>
+  <p id="hint">Ketuk amplop untuk membuka</p>
+</div>
+
+<div id="app">
+  <div class="bar">
+    <button id="play">Putar suara</button>
+    <button id="stop" class="alt">Berhenti</button>
+    <button id="mus" class="alt" aria-pressed="true">Musik: nyala</button>
+    <span id="st" aria-live="polite"></span>
+  </div>
+  <div id="sheet">
+    <div id="paper">
+      <h1>Permintaan Maaf</h1>
+      <p class="sub">Sebuah penjelasan, dan harapan untuk ke depannya.</p>
+      <p>Ada sedikit konteks yang perlu aku jelaskan. Selama ini, aku terbiasa menggunakan tolok ukur yang bersumber dari norma sosial, prinsip moral, aturan agama, hukum, maupun jurnal dan penelitian yang kredibel. Karena itu, ketika menemukan perilaku seperti pembualan, penyampaian klaim tanpa dasar, atau hal-hal yang menurut standar tersebut menyimpang, reaksiku terkadang cukup tegas.</p>
+      <p>Mungkin karena aku menganggap prinsip-prinsip itu sudah menjadi pengetahuan dan standar umum, aku sering langsung memakainya untuk menilai suatu situasi, tanpa lebih dulu menjelaskan landasannya atau memberi ruang klarifikasi. Di sinilah aku sadar bahwa caraku bisa terlalu kaku, bahkan berisiko menghakimi orang yang belum tentu sepenuhnya bersalah.</p>
+      <h2>Permintaan maaf</h2>
+      <p>Untuk itu, aku minta maaf kalau pernah terlalu cepat mengambil kesimpulan atau langsung mengkritik seseorang di tempat. Aku seharusnya tetap memeriksa konteks, mendengar penjelasan, dan membedakan antara kesalahan yang disengaja, kekeliruan, dan ketidaktahuan.</p>
+      <h2>Harapan ke depan</h2>
+      <p>Aku juga berharap kita semua bisa lebih berhati-hati dalam menyampaikan sesuatu. Jangan sampai ucapan dilontarkan tanpa dasar yang jelas, lalu ketika dipertanyakan justru dianggap sebagai persoalan pribadi.</p>
+      <p>Dalam kasus ini, kalau aku dianggap terlalu keras dan kaku aku minta maaf</p>
+      <p>Terima kasih sudah membaca dan mendengarkan.</p>
+      <button id="burn">Selesai membaca</button>
+    </div>
+    <div class="fire" id="fire"></div>
+  </div>
+</div>
+
+<div id="outro">
+  <div class="smile"><b></b></div>
+  <p>Surat nya telah menjadi abu, biarlah waktu membawa pergi segala yang usai</p>
+  <button id="again" class="alt">Baca lagi</button>
+</div>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var st=$('st'),paper=$('paper'),sheet=$('sheet');
+
+ var fire=$('fire');
+for(var k=0;k<14;k++){var f=document.createElement('i');f.style.left=(k*7.2)+'%';f.style.animationDelay=(Math.random()*.4)+'s';f.style.height=(26+Math.random()*22)+'px';fire.appendChild(f);}
+
+ var ac=null,master=null,musOn=true,running=false,timer=null;
+var chords=[[62,66,69,74],[61,64,69,73],[62,66,71,74],[61,66,69,73],[62,67,71,74],[62,66,69,74],[62,67,71,74],[61,64,69,73]];
+var bass=[50,45,47,42,43,50,43,45],mel=[78,76,74,73,71,69,71,73];
+function hz(m){return 440*Math.pow(2,(m-69)/12)}
+function note(m,t,d,v,type){
+  var o=ac.createOscillator(),g=ac.createGain();
+  o.type=type;o.frequency.value=hz(m);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05);
+}
+function loop(t0){
+  if(!running)return;
+  var beat=.25,pat=[0,1,2,3,2,1,2,3];
+  for(var c=0;c<8;c++){
+    var t=t0+c*2;
+    note(bass[c],t,2.2,.22,'triangle');
+    for(var i=0;i<8;i++)note(chords[c][pat[i]],t+i*beat,1.1,.09,'triangle');
+    note(mel[c],t,1.9,.12,'sine');
+  }
+  timer=setTimeout(function(){loop(t0+16)},Math.max(0,(t0+14-ac.currentTime)*1000));
+}
+function musicStart(){
+  if(running)return;
+  ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+  if(ac.state==='suspended')ac.resume();
+  master=ac.createGain();master.gain.value=.55;
+  var lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2800;
+  master.connect(lp);lp.connect(ac.destination);
+  running=true;loop(ac.currentTime+.1);
+}
+function musicStop(){
+  running=false;clearTimeout(timer);
+  if(master){var m=master;m.gain.linearRampToValueAtTime(0,ac.currentTime+.8);setTimeout(function(){try{m.disconnect()}catch(e){}},1000);}
+}
+function duck(on){if(master&&ac)master.gain.linearRampToValueAtTime(on?.22:.55,ac.currentTime+.4)}
+$('mus').onclick=function(){
+  musOn=!musOn;this.setAttribute('aria-pressed',musOn);
+  this.textContent='Musik: '+(musOn?'nyala':'mati');
+  if(musOn)musicStart();else musicStop();
+};
+
+ var synth=window.speechSynthesis,voice=null,queue=[],sess=0,playing=false,qi=0;
+function pickVoice(){if(!synth)return;var v=synth.getVoices();voice=v.find(function(x){return /^id[-_]ID/i.test(x.lang)})||v.find(function(x){return /^(id|in|ms)/i.test(x.lang)})||null}
+if(synth){pickVoice();synth.onvoiceschanged=pickVoice;}
+function build(){
+  queue=[];
+  [].slice.call(paper.querySelectorAll('h1,h2,p:not(.sub)')).forEach(function(el){
+    var s=el.textContent.match(/[^.!?]+[.!?]*/g)||[];
+    s.forEach(function(x){x=x.trim();if(x)queue.push({el:el,t:x})});
+  });
+}
+function mark(el){
+  [].forEach.call(paper.querySelectorAll('.on'),function(e){e.classList.remove('on')});
+  if(el){el.classList.add('on');paper.scrollTo({top:Math.max(0,el.offsetTop-80),behavior:'smooth'});}
+}
+function say(i,s){
+  if(s!==sess||!playing)return;
+  if(i>=queue.length){playing=false;mark(null);duck(false);$('play').textContent='Putar suara';st.textContent='Selesai';setTimeout(function(){if(sess===s)burn()},2500);return;}
+  qi=i;mark(queue[i].el);
+  var u=new SpeechSynthesisUtterance(queue[i].t);
+  u.lang='id-ID';if(voice)u.voice=voice;u.rate=.92;
+  var started=false;
+  u.onstart=function(){started=true};
+  u.onend=function(){say(i+1,s)};
+  u.onerror=function(e){
+    if(e.error==='interrupted'||e.error==='canceled')return;
+    playing=false;duck(false);$('play').textContent='Putar suara';
+    st.textContent='Suara tidak bisa diputar di perangkat ini';
+  };
+  synth.speak(u);
+  if(i===0)setTimeout(function(){if(s===sess&&playing&&!started&&!synth.speaking){playing=false;duck(false);$('play').textContent='Putar suara';st.textContent='Tidak ada suara bahasa Indonesia di perangkat';}},4000);
+}
+$('play').onclick=function(){
+  if(!synth){st.textContent='Browser tidak mendukung suara';return;}
+  if(playing){playing=false;sess++;synth.cancel();duck(false);this.textContent='Lanjut';st.textContent='Dijeda';return;}
+  sess++;var s=sess;synth.cancel();build();playing=true;duck(true);
+  this.textContent='Jeda';st.textContent='Memutar…';
+  var from=(st.textContent==='Dijeda')?qi:0;
+  setTimeout(function(){say(from,s)},150);
+};
+$('stop').onclick=function(){sess++;playing=false;qi=0;if(synth)synth.cancel();mark(null);duck(false);$('play').textContent='Putar suara';st.textContent='';};
+
+ var env=$('env'),opened=false;
+function open(){
+  if(opened)return;opened=true;env.classList.add('open');$('hint').textContent='';
+  if(musOn)musicStart();
+  setTimeout(function(){$('intro').classList.add('gone');$('app').classList.add('show');},2600);
+}
+env.onclick=open;env.onkeydown=function(e){if(e.key==='Enter'||e.key===' ')open()};
+
+ var burning=false,OFF=100,N=64,fxRaf=0,parts=[],cv=document.createElement('canvas');
+cv.style.cssText='position:absolute;left:0;top:-'+OFF+'px;pointer-events:none;display:none';sheet.appendChild(cv);
+function resetBurn(){cancelAnimationFrame(fxRaf);cancelAnimationFrame(bRaf);bc.style.display='none';$('app').classList.remove('collapse','shake');cv.style.display='none';paper.style.clipPath='';paper.style.filter='';parts=[];}
+function igniteFx(){
+ var W=sheet.clientWidth,H=sheet.clientHeight,dpr=Math.min(2,window.devicePixelRatio||1),i,ph=[];
+ cv.style.display='block';cv.style.width=W+'px';cv.style.height=(H+OFF)+'px';cv.width=W*dpr;cv.height=(H+OFF)*dpr;
+ var c=cv.getContext('2d');for(i=0;i<6;i++)ph.push(Math.random()*6.28);
+ var T=8000,t0=performance.now(),last=t0;
+ function nz(x,a){return Math.sin(x*9+ph[a])*.5+Math.sin(x*23+ph[a+1])*.3+Math.sin(x*57+ph[a+2])*.2}
+ function fy(i,p){var x=i/N;return H*(1-p*1.7*(1+.22*nz(x,0)))+14*nz(x,3)+(x-.5)*H*.12}
+ function f(now){
+  var dt=Math.min(.05,(now-last)/1000),tt=Math.min(1,(now-t0)/T),p=Math.pow(tt,1.15),fr=[],j;last=now;
+  for(i=0;i<=N;i++)fr.push(fy(i,p));
+  var pts='0px -120px,'+W+'px -120px';
+  for(i=N;i>=0;i--)pts+=','+(i*W/N).toFixed(1)+'px '+fr[i].toFixed(1)+'px';
+  paper.style.clipPath='polygon('+pts+')';
+  paper.style.filter='sepia('+(p*.6)+') brightness('+(1-p*.25)+')';
+  c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H+OFF);c.translate(0,OFF);
+  function line(){c.beginPath();for(j=0;j<=N;j++){if(j)c.lineTo(j*W/N,fr[j]);else c.moveTo(0,fr[0]);}}
+  c.save();c.beginPath();c.moveTo(0,-OFF);c.lineTo(W,-OFF);for(i=N;i>=0;i--)c.lineTo(i*W/N,fr[i]);c.closePath();c.clip();
+  c.lineJoin='round';
+  c.translate(0,-9);line();c.lineWidth=30;c.strokeStyle='rgba(25,12,5,.55)';c.stroke();
+  c.translate(0,5);line();c.lineWidth=14;c.strokeStyle='rgba(60,25,8,.8)';c.stroke();
+  c.translate(0,4);line();c.lineWidth=5;c.strokeStyle='rgba(150,50,10,.9)';c.stroke();
+  c.restore();
+  c.save();c.globalCompositeOperation='lighter';c.shadowColor='#ff5a00';c.shadowBlur=16;c.lineWidth=3;
+  for(i=0;i<N;i++){c.strokeStyle='rgba(255,'+(90+Math.random()*120|0)+',20,'+(.55+Math.random()*.45)+')';c.beginPath();c.moveTo(i*W/N,fr[i]);c.lineTo((i+1)*W/N,fr[i+1]);c.stroke();}
+  c.restore();
+  if(tt<1){for(i=0;i<10;i++){
+   var k=Math.random()*N|0,x=k*W/N+Math.random()*W/N,y=fr[k],r=Math.random(),R=Math.random;
+   if(y<-5||y>H+5)continue;
+   parts.push(r<.6?{t:0,x:x,y:y,vx:(R()-.5)*20,vy:-(40+R()*80),l:0,m:.5+R()*.5,s:7+R()*10}
+    :r<.8?{t:1,x:x,y:y,vx:(R()-.5)*50,vy:-(80+R()*140),l:0,m:.7+R()*.8,s:1.5+R()*1.5}
+    :r<.9?{t:2,x:x,y:y-10,vx:(R()-.5)*20,vy:-(20+R()*30),l:0,m:2+R(),s:14+R()*14}
+    :{t:3,x:x,y:y,vx:(R()-.5)*40,vy:-(30+R()*60),l:0,m:1.5+R(),s:2+R()*2});
+  }}
+  var np=[];
+  parts.forEach(function(q){
+   q.l+=dt;if(q.l>=q.m)return;var a=q.l/q.m;
+   q.x+=q.vx*dt+Math.sin(q.l*6+q.s)*.4;q.y+=q.vy*dt;np.push(q);
+   if(q.t===0){var sz=q.s*(1-a*.7);c.globalCompositeOperation='lighter';
+    var g=c.createRadialGradient(q.x,q.y,0,q.x,q.y,sz);
+    g.addColorStop(0,'rgba(255,230,140,'+(.9*(1-a))+')');g.addColorStop(.45,'rgba(255,120,20,'+(.65*(1-a))+')');g.addColorStop(1,'rgba(200,30,0,0)');
+    c.fillStyle=g;c.beginPath();c.arc(q.x,q.y,sz,0,6.3);c.fill();}
+   else if(q.t===1){c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,200,90,'+(1-a)+')';c.beginPath();c.arc(q.x,q.y,q.s,0,6.3);c.fill();}
+   else if(q.t===2){q.s+=dt*12;c.globalCompositeOperation='source-over';c.fillStyle='rgba(110,110,110,'+(.09*(1-a))+')';c.beginPath();c.arc(q.x,q.y,q.s,0,6.3);c.fill();}
+   else{c.globalCompositeOperation='source-over';c.fillStyle='rgba(30,25,20,'+(1-a)+')';c.fillRect(q.x,q.y,q.s,q.s*.6);}
+  });
+  parts=np;c.globalCompositeOperation='source-over';
+  if(tt<1||parts.length)fxRaf=requestAnimationFrame(f);else cv.style.display='none';
+ }
+ fxRaf=requestAnimationFrame(f);
+}
+var bc=document.createElement('canvas'),bRaf=0,bp=[];
+bc.style.cssText='position:fixed;inset:0;width:100%;height:100%;z-index:30;pointer-events:none;display:none';document.body.appendChild(bc);
+function boomSound(){
+ try{
+ ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+ if(ac.state==='suspended')ac.resume();
+ var t=ac.currentTime,out=ac.createGain();out.gain.value=.9;out.connect(ac.destination);
+ function noise(d){var b=ac.createBuffer(1,ac.sampleRate*d,ac.sampleRate),a=b.getChannelData(0);for(var i=0;i<a.length;i++)a[i]=Math.random()*2-1;var s=ac.createBufferSource();s.buffer=b;return s}
+ var n=noise(2.5),lp=ac.createBiquadFilter(),g=ac.createGain();lp.type='lowpass';lp.frequency.setValueAtTime(5000,t);lp.frequency.exponentialRampToValueAtTime(120,t+1.8);
+ g.gain.setValueAtTime(1,t);g.gain.exponentialRampToValueAtTime(.001,t+2.3);n.connect(lp);lp.connect(g);g.connect(out);n.start(t);
+ var o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(28,t+1.2);
+ og.gain.setValueAtTime(1.2,t);og.gain.exponentialRampToValueAtTime(.001,t+1.6);o.connect(og);og.connect(out);o.start(t);o.stop(t+1.7);
+ var r=noise(3),bq=ac.createBiquadFilter(),rg=ac.createGain();bq.type='bandpass';bq.frequency.value=220;bq.Q.value=.7;
+ rg.gain.setValueAtTime(0,t+.3);rg.gain.linearRampToValueAtTime(.45,t+.8);rg.gain.exponentialRampToValueAtTime(.001,t+3);
+ r.connect(bq);bq.connect(rg);rg.connect(out);r.start(t+.3);
+ for(var i=0;i<24;i++){var tt=t+.5+Math.random()*2,c2=noise(.08),hp=ac.createBiquadFilter(),cg=ac.createGain();hp.type='highpass';hp.frequency.value=800+Math.random()*2500;cg.gain.setValueAtTime(.05+.25*Math.random(),tt);cg.gain.exponentialRampToValueAtTime(.001,tt+.07);c2.connect(hp);hp.connect(cg);cg.connect(out);c2.start(tt);}
+ }catch(e){}
+}
+function boom(){
+ boomSound();duck(true);
+ var W=bc.width=innerWidth,H=bc.height=innerHeight,c=bc.getContext('2d'),cx=W/2,cy=H*.45,i;
+ bc.style.display='block';$('app').classList.add('shake','collapse');
+ var t0=performance.now(),last=t0;bp=[];
+ for(i=0;i<160;i++){var a=Math.random()*6.283,v=150+Math.random()*700;bp.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v-200,s:3+Math.random()*12,r:Math.random()*6,vr:(Math.random()-.5)*14,k:Math.random()<.45?0:1});}
+ function f(now){
+  var dt=Math.min(.05,(now-last)/1000),t=(now-t0)/1000;last=now;
+  c.clearRect(0,0,W,H);c.globalCompositeOperation='lighter';
+  if(t<1.6){var fr=Math.min(1,t/.5),rad=60+Math.max(W,H)*.45*fr,al=Math.max(0,1-t/1.6);
+   var g=c.createRadialGradient(cx,cy,0,cx,cy,rad);g.addColorStop(0,'rgba(255,250,220,'+al+')');g.addColorStop(.3,'rgba(255,170,40,'+al*.85+')');g.addColorStop(.7,'rgba(200,50,10,'+al*.4+')');g.addColorStop(1,'rgba(120,20,0,0)');
+   c.fillStyle=g;c.fillRect(0,0,W,H);}
+  [0,.18].forEach(function(d,n){var u=t-d;if(u<0||u>1.2)return;c.strokeStyle='rgba(255,230,190,'+(.8*(1-u/1.2))+')';c.lineWidth=14-8*u/1.2-n*4;c.beginPath();c.arc(cx,cy,u*Math.max(W,H)*.9,0,6.3);c.stroke();});
+  if(t<.25){c.fillStyle='rgba(255,255,255,'+((1-t/.25)*.9)+')';c.fillRect(0,0,W,H);}
+  c.globalCompositeOperation='source-over';
+  bp.forEach(function(q){q.vy+=900*dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.r+=q.vr*dt;
+   c.save();c.translate(q.x,q.y);c.rotate(q.r);c.fillStyle=q.k?'#f6efe0':(t<1.2?'#ff8a2a':'#3a2a1c');c.fillRect(-q.s/2,-q.s/3,q.s,q.s*.66);c.restore();});
+  bp=bp.filter(function(q){return q.y<H+40});
+  if(t<4&&bp.length)bRaf=requestAnimationFrame(f);else bc.style.display='none';
+ }
+ bRaf=requestAnimationFrame(f);
+}
+var fxT=[],fxI=0;
+function nbuf(d){var b=ac.createBuffer(1,ac.sampleRate*d,ac.sampleRate),a=b.getChannelData(0);for(var i=0;i<a.length;i++)a[i]=Math.random()*2-1;var s=ac.createBufferSource();s.buffer=b;return s}
+function glitchSound(){
+ try{
+ ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+ if(ac.state==='suspended')ac.resume();
+ var t=ac.currentTime,out=ac.createGain();out.gain.value=.7;out.connect(ac.destination);
+ for(var i=0;i<16;i++){
+  var s=t+i*.085+Math.random()*.04,d=.03+Math.random()*.07,o=ac.createOscillator(),g=ac.createGain();
+  o.type=Math.random()<.5?'square':'sawtooth';
+  o.frequency.setValueAtTime(100+Math.random()*2400,s);o.frequency.setValueAtTime(100+Math.random()*2400,s+d/2);
+  g.gain.setValueAtTime(.08+.12*Math.random(),s);g.gain.setValueAtTime(.0001,s+d);
+  o.connect(g);g.connect(out);o.start(s);o.stop(s+d+.01);
+  var n=nbuf(d),hp=ac.createBiquadFilter(),ng=ac.createGain();hp.type='highpass';hp.frequency.value=1500+Math.random()*3000;
+  ng.gain.setValueAtTime(.2*Math.random(),s);ng.gain.setValueAtTime(.0001,s+d);n.connect(hp);hp.connect(ng);ng.connect(out);n.start(s);
+ }
+ }catch(e){}
+}
+function scarySound(){
+ try{
+ ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+ if(ac.state==='suspended')ac.resume();
+ var t=ac.currentTime,out=ac.createGain();out.gain.value=.9;out.connect(ac.destination);
+ var hit=ac.createOscillator(),hg=ac.createGain();hit.type='sine';hit.frequency.setValueAtTime(95,t);hit.frequency.exponentialRampToValueAtTime(28,t+.8);
+ hg.gain.setValueAtTime(1.1,t);hg.gain.exponentialRampToValueAtTime(.001,t+1);hit.connect(hg);hg.connect(out);hit.start(t);hit.stop(t+1.1);
+ var lp=ac.createBiquadFilter(),dg=ac.createGain();lp.type='lowpass';lp.frequency.setValueAtTime(200,t);lp.frequency.linearRampToValueAtTime(700,t+2);
+ dg.gain.setValueAtTime(0,t);dg.gain.linearRampToValueAtTime(.4,t+1.2);dg.gain.exponentialRampToValueAtTime(.001,t+7);
+ lp.connect(dg);dg.connect(out);
+ [55,58.3,77.8].forEach(function(f){var o=ac.createOscillator();o.type='sawtooth';o.frequency.value=f;o.connect(lp);o.start(t);o.stop(t+7.1);});
+ var sc=ac.createOscillator(),bp2=ac.createBiquadFilter(),sg=ac.createGain(),lf=ac.createOscillator(),lg=ac.createGain();
+ sc.type='sawtooth';sc.frequency.setValueAtTime(500,t+.05);sc.frequency.exponentialRampToValueAtTime(2100,t+.9);
+ bp2.type='bandpass';bp2.frequency.value=1500;bp2.Q.value=1.5;
+ lf.frequency.value=38;lg.gain.value=.12;lf.connect(lg);lg.connect(sg.gain);
+ sg.gain.setValueAtTime(.22,t+.05);sg.gain.exponentialRampToValueAtTime(.001,t+1.4);
+ sc.connect(bp2);bp2.connect(sg);sg.connect(out);sc.start(t+.05);sc.stop(t+1.5);lf.start(t);lf.stop(t+1.5);
+ var w=nbuf(5),wb=ac.createBiquadFilter(),wg=ac.createGain();wb.type='bandpass';wb.frequency.value=3200;wb.Q.value=4;
+ wg.gain.setValueAtTime(0,t+.8);wg.gain.linearRampToValueAtTime(.12,t+2);wg.gain.exponentialRampToValueAtTime(.001,t+5);
+ w.connect(wb);wb.connect(wg);wg.connect(out);w.start(t+.8);
+ }catch(e){}
+}
+function creepStart(){
+ var o=$('outro');
+ fxT.push(setTimeout(function(){o.classList.add('glitch');glitchSound();duck(true)},2200));
+ fxT.push(setTimeout(function(){o.classList.add('scary');musicStop();scarySound();setTxt('“Tapi…”')},4000));
+ fxT.push(setTimeout(function(){setTxt('Abu tak pernah benar-benar hilang')},6500));
+ fxT.push(setTimeout(function(){setTxt('ia hanya berubah wujud')},9000));
+ fxT.push(setTimeout(function(){setTxt('sebagaimana kenangan yang masih menyisakanmu.')},12000));
+ fxT.push(setTimeout(function(){o.classList.remove('glitch');
+  fxI=setInterval(function(){o.classList.add('glitch');setTimeout(function(){o.classList.remove('glitch')},260)},3200)},4800));
+}
+var origTxt='';
+function setTxt(s){var p=$('outro').querySelector('p');if(!origTxt)origTxt=p.textContent;p.textContent=s}
+function creepReset(){if(origTxt)$('outro').querySelector('p').textContent=origTxt;
+ fxT.forEach(clearTimeout);fxT=[];clearInterval(fxI);
+ $('outro').classList.remove('glitch','scary');
+ if(musOn)musicStart();
+}
+function burn(){
+  if(burning)return;burning=true;
+  sess++;playing=false;if(synth)synth.cancel();mark(null);duck(false);
+  igniteFx();
+  setTimeout(boom,8200);setTimeout(function(){$('outro').classList.add('show');creepStart();},11000);
+}
+$('burn').onclick=burn;
+$('again').onclick=function(){
+  burning=false;resetBurn();creepReset();$('outro').classList.remove('show');
+  paper.scrollTop=0;st.textContent='';$('play').textContent='Putar suara';
+};
+})();
+</script>
+</body>
+</html>
