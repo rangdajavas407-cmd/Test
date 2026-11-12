@@ -63,20 +63,7 @@ button:focus-visible{outline:3px solid var(--tx);outline-offset:2px}
 #app.shake{animation:shake .8s}
 @keyframes fall{0%{transform:none}15%{transform:translateY(-14px) rotate(-1deg)}100%{transform:translateY(120vh) rotate(18deg);opacity:.6}}
 #app.collapse .bar{animation:fall 1.6s .5s cubic-bezier(.5,0,1,.6) forwards}
-#outro::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,#0007 0 2px,transparent 2px 4px)}
-#outro.glitch::after,#outro.scary::after{opacity:.45}
-@keyframes gl{0%{transform:translate(0);filter:none}15%{transform:translate(-8px,3px) skewX(10deg);filter:hue-rotate(120deg) saturate(4)}30%{transform:translate(6px,-4px);filter:invert(1)}45%{transform:translate(-3px,0) scaleY(1.08);filter:none;clip-path:inset(30% 0 40% 0)}60%{transform:translate(9px,2px) skewX(-12deg);filter:hue-rotate(250deg);clip-path:none}80%{transform:translate(-5px,-2px);filter:contrast(3)}100%{transform:none;filter:none}}
-#outro.glitch .smile,#outro.glitch p{animation:gl .22s steps(1) infinite}
-#outro.glitch p{text-shadow:3px 0 #f0f,-3px 0 #0ff}
-@keyframes creep{from{transform:scale(1)}to{transform:scale(1.12) rotate(-1.5deg)}}
-#outro.scary{background:#0a0505;transition:background .3s}
-#outro.scary p{color:#b33}
-#outro.scary .smile{background:#d8c27a;box-shadow:inset -.05em -.06em 0 #8a7a3a,0 0 .35em #a00;animation:creep 2.5s ease-in-out infinite alternate}
-#outro.scary .smile::before,#outro.scary .smile::after{top:.24em;width:.17em;height:.23em;background:#000;box-shadow:0 0 .06em #f00;animation:none}
-#outro.scary .smile::before{left:.2em}
-#outro.scary .smile::after{left:.63em}
-#outro.scary .smile b{left:.12em;top:.46em;width:.76em;height:.38em;border:.03em solid #111;border-top-width:.05em;border-radius:0 0 50% 50%/0 0 100% 100%;background:repeating-linear-gradient(90deg,#eee 0 .04em,#111 .04em .055em)}
-@media (prefers-reduced-motion:reduce){.env,.smile::before,.smile::after,#outro.glitch .smile,#outro.glitch p,#outro.scary .smile{animation:none}}
+@media (prefers-reduced-motion:reduce){.env,.smile::before,.smile::after{animation:none}}
 </style>
 </head>
 <body>
@@ -314,72 +301,15 @@ function boom(){
  }
  bRaf=requestAnimationFrame(f);
 }
-var fxT=[],fxI=0;
-function nbuf(d){var b=ac.createBuffer(1,ac.sampleRate*d,ac.sampleRate),a=b.getChannelData(0);for(var i=0;i<a.length;i++)a[i]=Math.random()*2-1;var s=ac.createBufferSource();s.buffer=b;return s}
-function glitchSound(){
- try{
- ac=ac||new (window.AudioContext||window.webkitAudioContext)();
- if(ac.state==='suspended')ac.resume();
- var t=ac.currentTime,out=ac.createGain();out.gain.value=.7;out.connect(ac.destination);
- for(var i=0;i<16;i++){
-  var s=t+i*.085+Math.random()*.04,d=.03+Math.random()*.07,o=ac.createOscillator(),g=ac.createGain();
-  o.type=Math.random()<.5?'square':'sawtooth';
-  o.frequency.setValueAtTime(100+Math.random()*2400,s);o.frequency.setValueAtTime(100+Math.random()*2400,s+d/2);
-  g.gain.setValueAtTime(.08+.12*Math.random(),s);g.gain.setValueAtTime(.0001,s+d);
-  o.connect(g);g.connect(out);o.start(s);o.stop(s+d+.01);
-  var n=nbuf(d),hp=ac.createBiquadFilter(),ng=ac.createGain();hp.type='highpass';hp.frequency.value=1500+Math.random()*3000;
-  ng.gain.setValueAtTime(.2*Math.random(),s);ng.gain.setValueAtTime(.0001,s+d);n.connect(hp);hp.connect(ng);ng.connect(out);n.start(s);
- }
- }catch(e){}
-}
-function scarySound(){
- try{
- ac=ac||new (window.AudioContext||window.webkitAudioContext)();
- if(ac.state==='suspended')ac.resume();
- var t=ac.currentTime,out=ac.createGain();out.gain.value=.9;out.connect(ac.destination);
- var hit=ac.createOscillator(),hg=ac.createGain();hit.type='sine';hit.frequency.setValueAtTime(95,t);hit.frequency.exponentialRampToValueAtTime(28,t+.8);
- hg.gain.setValueAtTime(1.1,t);hg.gain.exponentialRampToValueAtTime(.001,t+1);hit.connect(hg);hg.connect(out);hit.start(t);hit.stop(t+1.1);
- var lp=ac.createBiquadFilter(),dg=ac.createGain();lp.type='lowpass';lp.frequency.setValueAtTime(200,t);lp.frequency.linearRampToValueAtTime(700,t+2);
- dg.gain.setValueAtTime(0,t);dg.gain.linearRampToValueAtTime(.4,t+1.2);dg.gain.exponentialRampToValueAtTime(.001,t+7);
- lp.connect(dg);dg.connect(out);
- [55,58.3,77.8].forEach(function(f){var o=ac.createOscillator();o.type='sawtooth';o.frequency.value=f;o.connect(lp);o.start(t);o.stop(t+7.1);});
- var sc=ac.createOscillator(),bp2=ac.createBiquadFilter(),sg=ac.createGain(),lf=ac.createOscillator(),lg=ac.createGain();
- sc.type='sawtooth';sc.frequency.setValueAtTime(500,t+.05);sc.frequency.exponentialRampToValueAtTime(2100,t+.9);
- bp2.type='bandpass';bp2.frequency.value=1500;bp2.Q.value=1.5;
- lf.frequency.value=38;lg.gain.value=.12;lf.connect(lg);lg.connect(sg.gain);
- sg.gain.setValueAtTime(.22,t+.05);sg.gain.exponentialRampToValueAtTime(.001,t+1.4);
- sc.connect(bp2);bp2.connect(sg);sg.connect(out);sc.start(t+.05);sc.stop(t+1.5);lf.start(t);lf.stop(t+1.5);
- var w=nbuf(5),wb=ac.createBiquadFilter(),wg=ac.createGain();wb.type='bandpass';wb.frequency.value=3200;wb.Q.value=4;
- wg.gain.setValueAtTime(0,t+.8);wg.gain.linearRampToValueAtTime(.12,t+2);wg.gain.exponentialRampToValueAtTime(.001,t+5);
- w.connect(wb);wb.connect(wg);wg.connect(out);w.start(t+.8);
- }catch(e){}
-}
-function creepStart(){
- var o=$('outro');
- fxT.push(setTimeout(function(){o.classList.add('glitch');glitchSound();duck(true)},2200));
- fxT.push(setTimeout(function(){o.classList.add('scary');musicStop();scarySound();setTxt('“Tapi…”')},4000));
- fxT.push(setTimeout(function(){setTxt('Abu tak pernah benar-benar hilang')},6500));
- fxT.push(setTimeout(function(){setTxt('ia hanya berubah wujud')},9000));
- fxT.push(setTimeout(function(){setTxt('sebagaimana kenangan yang masih menyisakanmu.')},12000));
- fxT.push(setTimeout(function(){o.classList.remove('glitch');
-  fxI=setInterval(function(){o.classList.add('glitch');setTimeout(function(){o.classList.remove('glitch')},260)},3200)},4800));
-}
-var origTxt='';
-function setTxt(s){var p=$('outro').querySelector('p');if(!origTxt)origTxt=p.textContent;p.textContent=s}
-function creepReset(){if(origTxt)$('outro').querySelector('p').textContent=origTxt;
- fxT.forEach(clearTimeout);fxT=[];clearInterval(fxI);
- $('outro').classList.remove('glitch','scary');
- if(musOn)musicStart();
-}
 function burn(){
   if(burning)return;burning=true;
   sess++;playing=false;if(synth)synth.cancel();mark(null);duck(false);
   igniteFx();
-  setTimeout(boom,8200);setTimeout(function(){$('outro').classList.add('show');creepStart();},11000);
+  setTimeout(boom,8200);setTimeout(function(){$('outro').classList.add('show');},11000);
 }
 $('burn').onclick=burn;
 $('again').onclick=function(){
-  burning=false;resetBurn();creepReset();$('outro').classList.remove('show');
+  burning=false;resetBurn();$('outro').classList.remove('show');
   paper.scrollTop=0;st.textContent='';$('play').textContent='Putar suara';
 };
 })();
